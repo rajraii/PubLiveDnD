@@ -20,13 +20,12 @@ function App() {
         </span>
       </header>
       <Context.Provider value={{ state: state, dispatch: dispatch }}>
-        {state?.data ? (
-          <DragDrop />
-        ) : (
-          <div className="fixed top-0 left-0 h-screen w-full">
+        {state?.loading ? (
+          <div className="fixed top-0 z-50 left-0 h-screen w-full ">
             <Loader />
           </div>
-        )}
+        ) : null}
+        {state?.data ? <DragDrop /> : null}
       </Context.Provider>
     </div>
   );

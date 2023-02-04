@@ -15,20 +15,19 @@ const ImageCard = ({ src, dispatch }) => {
     <>
       {src?.URL ? (
         <div
-          className="rounded-md overflow-hidden hover:scale-2 drop-shadow-xl relative bg-primary hover:drop-shadow-lg h-[220px]"
+          className="rounded-md overflow-hdden hover:scale-2 drop-shadow-xl relative bg-primary hover:drop-shadow-lg h-[220px]"
           onMouseEnter={toggleHover}
           onMouseLeave={toggleHover}
         >
           <img
+            onDragStart={(e) => {e.preventDefault()}} 
             src={src?.URL}
             alt=""
             className={` w-full h-full object-contain`}
           />
           {hover ? (
-            <span className="text-white absolute top-0 left-0 w-full h-full bg-purple-400 opacity-70 p-8">
-              <div onClick={handleDelete} className="border-2 border-white w-full h-full flex justify-center items-center text-xl">
-                <AiTwotoneDelete />
-              </div>
+            <span onClick={handleDelete} className="text-black absolute top-0 right-0 p-2 cursor-pointer">
+                <AiTwotoneDelete/>
             </span>
           ) : null}
         </div>

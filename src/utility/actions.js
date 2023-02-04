@@ -6,7 +6,7 @@ import {
   FETCH,
   GET_GALLERY_LIST,
   SUCCESS,
-  UPLOAD_IMAGE
+  UPLOAD_IMAGE,
 } from "./actionTypes";
 
 const galleryCollectionRef = collection(db, "gallery");
@@ -33,16 +33,16 @@ export const getGallery = async (dispatch) => {
 };
 
 export const onUpdateImageCard = async (dispatch, data, URL) => {
-  dispatch({type:FETCH});
+  dispatch({ type: FETCH });
   const imageDoc = doc(db, "gallery", data?.id);
   const newURL = { URL: URL };
   await updateDoc(imageDoc, newURL)
     .then(() => {
-      dispatch({type:SUCCESS});
+      dispatch({ type: SUCCESS });
       dispatch({ type: UPLOAD_IMAGE, payload: { data: data, URL: URL } });
     })
     .catch((err) => {
-      dispatch({type:ERROR});
+      dispatch({ type: ERROR });
       console.log(err);
     });
 };
@@ -60,7 +60,7 @@ export const onImageUpload = async (dispatch, file, data) => {
     .then((snapshot) => {
       dispatch({ type: SUCCESS });
       getDownloadURL(snapshot.ref).then((downloadURL) => {
-        dispatch({type:SUCCESS})
+        dispatch({ type: SUCCESS });
         onUpdateImageCard(dispatch, data, downloadURL);
       });
     })

@@ -53,7 +53,7 @@ const DropZone = ({ dispatch, data }) => {
             ) : (
               <div>
                 <p>Drag 'n' drop some files here, or click to select files</p>
-                <button className="drop-shadow-md rounded-md bg-purple-500 p-1 text-white mt-1 px-2">
+                <button className="drop-shadow-md rounded-md bg-purple-500 p-1 text-white mt-1 px-2 hover:scale-2">
                   Upload
                 </button>
               </div>

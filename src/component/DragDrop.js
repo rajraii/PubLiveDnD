@@ -1,46 +1,72 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ImageCard from "./imageCard";
 import { useContext } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Context } from "../utility/context";
+import {
+  GridContextProvider,
+  GridDropZone,
+  GridItem,
+  swap,
+} from "react-grid-dnd";
 
 const DragDrop = () => {
   const { state, dispatch } = useContext(Context);
-  const onMoveItems = (result) => {
-    if(!result.destination) return;
-    const newList = [...state.data];
-    const [reorderedItem] = newList.splice(result.source.index, 1);
-    newList.splice(result.destination.index, 0, reorderedItem);
-    dispatch({ type: "reorder", payload: newList });
+
+  const onChange = (sourceId, sourceIndex, targetIndex) => {
+    console.log(sourceIndex, targetIndex)
+    const newState = swap(state?.data, sourceIndex, targetIndex);
+    dispatch({ type: "reorder", payload: newState });
   };
+
+  const getColumns = () => {
+    const width = window.innerWidth;
+    if (width >= 980) return 5;
+    else if (width >= 768) return 4;
+    else if (width >= 500) return 3;
+    return 2;
+  };
+  const [columns, setColumns] = useState(getColumns);
+
+  useEffect(() => {
+    const getColPerWidth = () => {
+      setColumns(getColumns());
+    };
+    const mqlTabColumns = () => {
+      setColumns(2);
+    };
+    const mqlDesktopColumns = () => {
+      setColumns(5);
+    };
+
+    const mqlTab = window.matchMedia("(max-width: 500px)");
+    const mqlDesktop = window.matchMedia("(min-width: 98px)");
+
+    mqlTab.addEventListener("change", mqlTabColumns);
+    mqlDesktop.addEventListener("change", mqlDesktopColumns);
+    window.addEventListener("resize", getColPerWidth);
+
+    return () => {
+      window.removeEventListener("resize", getColPerWidth);
+      mqlTab.removeEventListener("change", mqlTabColumns);
+      mqlDesktop.removeEventListener("change", mqlDesktopColumns);
+    };
+  }, []);
   return (
-    <DragDropContext onDragEnd={onMoveItems}>
-      <Droppable droppableId="gallery">
-        {(provided) => (
-          <div
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-5"
-          >
-            {state?.data?.map((item, idx) => (
-              <Draggable key={item?.id} draggableId={item?.id + ""} index={idx}>
-                {(provided) => (
-                  <div
-                    key={item?.id}
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                  >
-                    <ImageCard key={item?.id} src={item}  dispatch={dispatch}/>
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+    <GridContextProvider onChange={onChange}>
+      <GridDropZone
+        boxesPerRow={columns}
+        rowHeight={240}
+        style={{ height: 240 * Math.ceil(state?.data.length / columns) }}
+      >
+        {state?.data?.map((item, idx) => (
+          <GridItem key={item?.id}>
+            <div className="m-2">
+              <ImageCard src={item} dispatch={dispatch} />
+            </div>
+          </GridItem>
+        ))}
+      </GridDropZone>
+    </GridContextProvider>
   );
 };
 
